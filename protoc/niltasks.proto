@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package protoc;
+option go_package = "./protoc";
+
+service ToDoItems {
+	rpc GetItems(GetItemsRequest) returns (GetItemsResponse);
+}
+
+message GetItemsRequest {
+	string userId = 1;
+}
+
+message ToDoItem {
+	bool active = 1;
+	string title = 2;
+	bool completed = 3;
+}
+
+message GetItemsResponse {
+	repeated ToDoItem list = 1;
+}
