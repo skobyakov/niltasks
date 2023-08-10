@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"net/http"
+	"niltasks/config"
 	"niltasks/internal/controller"
 	"niltasks/internal/repository"
 	"niltasks/internal/service"
@@ -10,7 +11,9 @@ import (
 )
 
 func Serve() {
-	repo := repository.New()
+	cfg := config.MustLoad()
+
+	repo := repository.New(cfg)
 	service := service.New(repo)
 	controller := controller.New(service)
 
