@@ -6,7 +6,7 @@ import (
 )
 
 type Service interface {
-	GetList()
+	GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*protoc.GetItemsResponse, error)
 }
 
 type Controller struct {
@@ -18,20 +18,12 @@ func New(s Service) *Controller {
 }
 
 func (c *Controller) GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*protoc.GetItemsResponse, error) {
-	list := []*protoc.ToDoItem{
-		{
-			Id:               "test-id",
-			Title:            "Title",
-			Description:      "Description",
-			Completed:        false,
-			ReadOnly:         false,
-			RescheduledTimes: 1,
-			CreatedAt:        1691675220,
-		},
+	res, err := c.service.GetItems(ctx, req)
+	if err != nil {
+		return nil, err
 	}
-	return &protoc.GetItemsResponse{
-		List: list,
-	}, nil
+
+	return res, nil
 }
 
 func (c *Controller) CompleteItem(context.Context, *protoc.CompleteItemRequest) (*protoc.CompleteItemResponse, error) {
