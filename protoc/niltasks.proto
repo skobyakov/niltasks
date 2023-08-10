@@ -5,6 +5,10 @@ option go_package = "./protoc";
 
 service ToDoItems {
 	rpc GetItems(GetItemsRequest) returns (GetItemsResponse);
+	rpc CompleteItem(CompleteItemRequest) returns (CompleteItemResponse);
+	rpc CreateItem(CreateItemRequest) returns (CreateItemResponse);
+	rpc RescheduleItem(RescheduleItemRequest) returns (RescheduleItemReponse);
+	rpc RemoveItem(RemoveItemRequest) returns (RemoveItemResponse);
 }
 
 message GetItemsRequest {
@@ -12,11 +16,55 @@ message GetItemsRequest {
 }
 
 message ToDoItem {
-	bool active = 1;
+	string id = 1;
 	string title = 2;
-	bool completed = 3;
+	string description = 3;
+	bool completed = 4;
+	bool readOnly = 5;
+	int32 rescheduledTimes = 6;
+	int32 createdAt = 7;
 }
 
 message GetItemsResponse {
 	repeated ToDoItem list = 1;
+}
+
+message CompleteItemRequest {
+	string userId = 1;
+	string itemId = 2;
+}
+
+message CompleteItemResponse {
+	string id = 1;
+	bool completed = 2;
+}
+
+message CreateItemRequest {
+	string userId = 1;
+	string title = 2;
+	string description = 3;
+}
+
+message CreateItemResponse {
+	ToDoItem item = 1;
+}
+
+message RescheduleItemRequest {
+	string userId = 1;
+	string itemId = 2;
+}
+
+message RescheduleItemReponse {
+	string id = 1;
+	int32 rescheduledTimes = 2;
+}
+
+message RemoveItemRequest {
+	string userId = 1;
+	string itemId = 2;
+}
+
+message RemoveItemResponse {
+	string id = 1;
+	bool removed = 2;
 }
