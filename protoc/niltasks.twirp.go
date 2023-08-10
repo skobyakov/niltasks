@@ -33,6 +33,14 @@ const _ = twirp.TwirpPackageMinVersion_8_1_0
 
 type ToDoItems interface {
 	GetItems(context.Context, *GetItemsRequest) (*GetItemsResponse, error)
+
+	CompleteItem(context.Context, *CompleteItemRequest) (*CompleteItemResponse, error)
+
+	CreateItem(context.Context, *CreateItemRequest) (*CreateItemResponse, error)
+
+	RescheduleItem(context.Context, *RescheduleItemRequest) (*RescheduleItemReponse, error)
+
+	RemoveItem(context.Context, *RemoveItemRequest) (*RemoveItemResponse, error)
 }
 
 // =========================
@@ -41,7 +49,7 @@ type ToDoItems interface {
 
 type toDoItemsProtobufClient struct {
 	client      HTTPClient
-	urls        [1]string
+	urls        [5]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -69,8 +77,12 @@ func NewToDoItemsProtobufClient(baseURL string, client HTTPClient, opts ...twirp
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(pathPrefix, "protoc", "ToDoItems")
-	urls := [1]string{
+	urls := [5]string{
 		serviceURL + "GetItems",
+		serviceURL + "CompleteItem",
+		serviceURL + "CreateItem",
+		serviceURL + "RescheduleItem",
+		serviceURL + "RemoveItem",
 	}
 
 	return &toDoItemsProtobufClient{
@@ -127,13 +139,197 @@ func (c *toDoItemsProtobufClient) callGetItems(ctx context.Context, in *GetItems
 	return out, nil
 }
 
+func (c *toDoItemsProtobufClient) CompleteItem(ctx context.Context, in *CompleteItemRequest) (*CompleteItemResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "CompleteItem")
+	caller := c.callCompleteItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *CompleteItemRequest) (*CompleteItemResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CompleteItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CompleteItemRequest) when calling interceptor")
+					}
+					return c.callCompleteItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CompleteItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CompleteItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsProtobufClient) callCompleteItem(ctx context.Context, in *CompleteItemRequest) (*CompleteItemResponse, error) {
+	out := new(CompleteItemResponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *toDoItemsProtobufClient) CreateItem(ctx context.Context, in *CreateItemRequest) (*CreateItemResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateItem")
+	caller := c.callCreateItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *CreateItemRequest) (*CreateItemResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CreateItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CreateItemRequest) when calling interceptor")
+					}
+					return c.callCreateItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CreateItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CreateItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsProtobufClient) callCreateItem(ctx context.Context, in *CreateItemRequest) (*CreateItemResponse, error) {
+	out := new(CreateItemResponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *toDoItemsProtobufClient) RescheduleItem(ctx context.Context, in *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "RescheduleItem")
+	caller := c.callRescheduleItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RescheduleItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RescheduleItemRequest) when calling interceptor")
+					}
+					return c.callRescheduleItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RescheduleItemReponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RescheduleItemReponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsProtobufClient) callRescheduleItem(ctx context.Context, in *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+	out := new(RescheduleItemReponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *toDoItemsProtobufClient) RemoveItem(ctx context.Context, in *RemoveItemRequest) (*RemoveItemResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "RemoveItem")
+	caller := c.callRemoveItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *RemoveItemRequest) (*RemoveItemResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RemoveItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RemoveItemRequest) when calling interceptor")
+					}
+					return c.callRemoveItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RemoveItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RemoveItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsProtobufClient) callRemoveItem(ctx context.Context, in *RemoveItemRequest) (*RemoveItemResponse, error) {
+	out := new(RemoveItemResponse)
+	ctx, err := doProtobufRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
 // =====================
 // ToDoItems JSON Client
 // =====================
 
 type toDoItemsJSONClient struct {
 	client      HTTPClient
-	urls        [1]string
+	urls        [5]string
 	interceptor twirp.Interceptor
 	opts        twirp.ClientOptions
 }
@@ -161,8 +357,12 @@ func NewToDoItemsJSONClient(baseURL string, client HTTPClient, opts ...twirp.Cli
 	// Build method URLs: <baseURL>[<prefix>]/<package>.<Service>/<Method>
 	serviceURL := sanitizeBaseURL(baseURL)
 	serviceURL += baseServicePath(pathPrefix, "protoc", "ToDoItems")
-	urls := [1]string{
+	urls := [5]string{
 		serviceURL + "GetItems",
+		serviceURL + "CompleteItem",
+		serviceURL + "CreateItem",
+		serviceURL + "RescheduleItem",
+		serviceURL + "RemoveItem",
 	}
 
 	return &toDoItemsJSONClient{
@@ -205,6 +405,190 @@ func (c *toDoItemsJSONClient) GetItems(ctx context.Context, in *GetItemsRequest)
 func (c *toDoItemsJSONClient) callGetItems(ctx context.Context, in *GetItemsRequest) (*GetItemsResponse, error) {
 	out := new(GetItemsResponse)
 	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[0], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *toDoItemsJSONClient) CompleteItem(ctx context.Context, in *CompleteItemRequest) (*CompleteItemResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "CompleteItem")
+	caller := c.callCompleteItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *CompleteItemRequest) (*CompleteItemResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CompleteItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CompleteItemRequest) when calling interceptor")
+					}
+					return c.callCompleteItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CompleteItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CompleteItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsJSONClient) callCompleteItem(ctx context.Context, in *CompleteItemRequest) (*CompleteItemResponse, error) {
+	out := new(CompleteItemResponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[1], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *toDoItemsJSONClient) CreateItem(ctx context.Context, in *CreateItemRequest) (*CreateItemResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateItem")
+	caller := c.callCreateItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *CreateItemRequest) (*CreateItemResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CreateItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CreateItemRequest) when calling interceptor")
+					}
+					return c.callCreateItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CreateItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CreateItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsJSONClient) callCreateItem(ctx context.Context, in *CreateItemRequest) (*CreateItemResponse, error) {
+	out := new(CreateItemResponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[2], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *toDoItemsJSONClient) RescheduleItem(ctx context.Context, in *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "RescheduleItem")
+	caller := c.callRescheduleItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RescheduleItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RescheduleItemRequest) when calling interceptor")
+					}
+					return c.callRescheduleItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RescheduleItemReponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RescheduleItemReponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsJSONClient) callRescheduleItem(ctx context.Context, in *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+	out := new(RescheduleItemReponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[3], in, out)
+	if err != nil {
+		twerr, ok := err.(twirp.Error)
+		if !ok {
+			twerr = twirp.InternalErrorWith(err)
+		}
+		callClientError(ctx, c.opts.Hooks, twerr)
+		return nil, err
+	}
+
+	callClientResponseReceived(ctx, c.opts.Hooks)
+
+	return out, nil
+}
+
+func (c *toDoItemsJSONClient) RemoveItem(ctx context.Context, in *RemoveItemRequest) (*RemoveItemResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "protoc")
+	ctx = ctxsetters.WithServiceName(ctx, "ToDoItems")
+	ctx = ctxsetters.WithMethodName(ctx, "RemoveItem")
+	caller := c.callRemoveItem
+	if c.interceptor != nil {
+		caller = func(ctx context.Context, req *RemoveItemRequest) (*RemoveItemResponse, error) {
+			resp, err := c.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RemoveItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RemoveItemRequest) when calling interceptor")
+					}
+					return c.callRemoveItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RemoveItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RemoveItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+	return caller(ctx, in)
+}
+
+func (c *toDoItemsJSONClient) callRemoveItem(ctx context.Context, in *RemoveItemRequest) (*RemoveItemResponse, error) {
+	out := new(RemoveItemResponse)
+	ctx, err := doJSONRequest(ctx, c.client, c.opts.Hooks, c.urls[4], in, out)
 	if err != nil {
 		twerr, ok := err.(twirp.Error)
 		if !ok {
@@ -318,6 +702,18 @@ func (s *toDoItemsServer) ServeHTTP(resp http.ResponseWriter, req *http.Request)
 	switch method {
 	case "GetItems":
 		s.serveGetItems(ctx, resp, req)
+		return
+	case "CompleteItem":
+		s.serveCompleteItem(ctx, resp, req)
+		return
+	case "CreateItem":
+		s.serveCreateItem(ctx, resp, req)
+		return
+	case "RescheduleItem":
+		s.serveRescheduleItem(ctx, resp, req)
+		return
+	case "RemoveItem":
+		s.serveRemoveItem(ctx, resp, req)
 		return
 	default:
 		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
@@ -483,6 +879,726 @@ func (s *toDoItemsServer) serveGetItemsProtobuf(ctx context.Context, resp http.R
 	}
 	if respContent == nil {
 		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetItemsResponse and nil error while calling GetItems. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveCompleteItem(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCompleteItemJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCompleteItemProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *toDoItemsServer) serveCompleteItemJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CompleteItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(CompleteItemRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.ToDoItems.CompleteItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *CompleteItemRequest) (*CompleteItemResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CompleteItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CompleteItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.CompleteItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CompleteItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CompleteItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *CompleteItemResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CompleteItemResponse and nil error while calling CompleteItem. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: !s.jsonCamelCase, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveCompleteItemProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CompleteItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := io.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(CompleteItemRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.ToDoItems.CompleteItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *CompleteItemRequest) (*CompleteItemResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CompleteItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CompleteItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.CompleteItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CompleteItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CompleteItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *CompleteItemResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CompleteItemResponse and nil error while calling CompleteItem. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveCreateItem(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateItemJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateItemProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *toDoItemsServer) serveCreateItemJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(CreateItemRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.ToDoItems.CreateItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *CreateItemRequest) (*CreateItemResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CreateItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CreateItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.CreateItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CreateItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CreateItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *CreateItemResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CreateItemResponse and nil error while calling CreateItem. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: !s.jsonCamelCase, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveCreateItemProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := io.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(CreateItemRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.ToDoItems.CreateItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *CreateItemRequest) (*CreateItemResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*CreateItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*CreateItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.CreateItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*CreateItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*CreateItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *CreateItemResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CreateItemResponse and nil error while calling CreateItem. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveRescheduleItem(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveRescheduleItemJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveRescheduleItemProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *toDoItemsServer) serveRescheduleItemJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "RescheduleItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(RescheduleItemRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.ToDoItems.RescheduleItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RescheduleItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RescheduleItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.RescheduleItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RescheduleItemReponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RescheduleItemReponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *RescheduleItemReponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *RescheduleItemReponse and nil error while calling RescheduleItem. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: !s.jsonCamelCase, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveRescheduleItemProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "RescheduleItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := io.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(RescheduleItemRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.ToDoItems.RescheduleItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *RescheduleItemRequest) (*RescheduleItemReponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RescheduleItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RescheduleItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.RescheduleItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RescheduleItemReponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RescheduleItemReponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *RescheduleItemReponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *RescheduleItemReponse and nil error while calling RescheduleItem. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveRemoveItem(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveRemoveItemJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveRemoveItemProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *toDoItemsServer) serveRemoveItemJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "RemoveItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	d := json.NewDecoder(req.Body)
+	rawReqBody := json.RawMessage{}
+	if err := d.Decode(&rawReqBody); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+	reqContent := new(RemoveItemRequest)
+	unmarshaler := protojson.UnmarshalOptions{DiscardUnknown: true}
+	if err = unmarshaler.Unmarshal(rawReqBody, reqContent); err != nil {
+		s.handleRequestBodyError(ctx, resp, "the json request could not be decoded", err)
+		return
+	}
+
+	handler := s.ToDoItems.RemoveItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *RemoveItemRequest) (*RemoveItemResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RemoveItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RemoveItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.RemoveItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RemoveItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RemoveItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *RemoveItemResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *RemoveItemResponse and nil error while calling RemoveItem. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	marshaler := &protojson.MarshalOptions{UseProtoNames: !s.jsonCamelCase, EmitUnpopulated: !s.jsonSkipDefaults}
+	respBytes, err := marshaler.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		ctx = callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *toDoItemsServer) serveRemoveItemProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "RemoveItem")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := io.ReadAll(req.Body)
+	if err != nil {
+		s.handleRequestBodyError(ctx, resp, "failed to read request body", err)
+		return
+	}
+	reqContent := new(RemoveItemRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	handler := s.ToDoItems.RemoveItem
+	if s.interceptor != nil {
+		handler = func(ctx context.Context, req *RemoveItemRequest) (*RemoveItemResponse, error) {
+			resp, err := s.interceptor(
+				func(ctx context.Context, req interface{}) (interface{}, error) {
+					typedReq, ok := req.(*RemoveItemRequest)
+					if !ok {
+						return nil, twirp.InternalError("failed type assertion req.(*RemoveItemRequest) when calling interceptor")
+					}
+					return s.ToDoItems.RemoveItem(ctx, typedReq)
+				},
+			)(ctx, req)
+			if resp != nil {
+				typedResp, ok := resp.(*RemoveItemResponse)
+				if !ok {
+					return nil, twirp.InternalError("failed type assertion resp.(*RemoveItemResponse) when calling interceptor")
+				}
+				return typedResp, err
+			}
+			return nil, err
+		}
+	}
+
+	// Call service method
+	var respContent *RemoveItemResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = handler(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *RemoveItemResponse and nil error while calling RemoveItem. nil responses are not supported"))
 		return
 	}
 
@@ -1087,19 +2203,34 @@ func callClientError(ctx context.Context, h *twirp.ClientHooks, err twirp.Error)
 }
 
 var twirpFileDescriptor0 = []byte{
-	// 218 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x2d, 0x28, 0xca, 0x2f,
-	0xc9, 0x4f, 0xd6, 0xcf, 0xcb, 0xcc, 0x29, 0x49, 0x2c, 0xce, 0x2e, 0xd6, 0x03, 0xf3, 0x85, 0xd8,
-	0x20, 0xc2, 0x4a, 0x9a, 0x5c, 0xfc, 0xee, 0xa9, 0x25, 0x9e, 0x25, 0xa9, 0xb9, 0xc5, 0x41, 0xa9,
-	0x85, 0xa5, 0xa9, 0xc5, 0x25, 0x42, 0x62, 0x5c, 0x6c, 0xa5, 0xc5, 0xa9, 0x45, 0x9e, 0x29, 0x12,
-	0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x50, 0x9e, 0x52, 0x18, 0x17, 0x47, 0x48, 0xbe, 0x4b, 0x3e,
-	0x48, 0x2d, 0x48, 0x4d, 0x62, 0x72, 0x49, 0x66, 0x59, 0x2a, 0x58, 0x0d, 0x47, 0x10, 0x94, 0x27,
-	0x24, 0xc2, 0xc5, 0x5a, 0x92, 0x59, 0x92, 0x93, 0x2a, 0xc1, 0x04, 0xd6, 0x0a, 0xe1, 0x08, 0xc9,
-	0x70, 0x71, 0x26, 0xe7, 0xe7, 0x16, 0xe4, 0xa4, 0x96, 0xa4, 0xa6, 0x48, 0x30, 0x83, 0x35, 0x20,
-	0x04, 0x94, 0x2c, 0xb8, 0x04, 0x10, 0x4e, 0x28, 0x2e, 0xc8, 0xcf, 0x2b, 0x4e, 0x15, 0x52, 0xe1,
-	0x62, 0xc9, 0xc9, 0x2c, 0x2e, 0x91, 0x60, 0x54, 0x60, 0xd6, 0xe0, 0x36, 0x12, 0x80, 0x38, 0x3a,
-	0x59, 0x0f, 0x66, 0x7f, 0x10, 0x58, 0xd6, 0xc8, 0x8b, 0x8b, 0x13, 0x26, 0x52, 0x2c, 0x64, 0xcb,
-	0xc5, 0x01, 0x33, 0x46, 0x48, 0x1c, 0xa6, 0x01, 0xcd, 0x6f, 0x52, 0x12, 0x98, 0x12, 0x10, 0x1b,
-	0x9d, 0xb8, 0xa2, 0x38, 0xf4, 0xf4, 0x21, 0x92, 0x49, 0x90, 0xc0, 0x31, 0x06, 0x04, 0x00, 0x00,
-	0xff, 0xff, 0xe1, 0xa0, 0x65, 0x66, 0x3c, 0x01, 0x00, 0x00,
+	// 464 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x54, 0xc1, 0x6e, 0xd3, 0x40,
+	0x10, 0x95, 0xdd, 0x26, 0x75, 0xa6, 0xa8, 0xa4, 0x43, 0x0b, 0x8b, 0x29, 0x92, 0xb5, 0xe2, 0x10,
+	0x38, 0xa4, 0x52, 0xb9, 0x20, 0x24, 0x90, 0x20, 0x45, 0x55, 0x2e, 0x20, 0x99, 0x9e, 0xb8, 0x05,
+	0xef, 0x48, 0xac, 0xb0, 0xe3, 0xe0, 0xdd, 0x20, 0xf1, 0xa3, 0xfc, 0x06, 0xbf, 0x80, 0xb2, 0xde,
+	0xcd, 0x26, 0xf1, 0x16, 0xa1, 0xf6, 0x38, 0xef, 0x8d, 0x66, 0x66, 0xdf, 0x7b, 0x36, 0x9c, 0x2e,
+	0x9a, 0x5a, 0xd7, 0xc5, 0xf9, 0x5c, 0x96, 0x7a, 0xa6, 0xbe, 0xab, 0xb1, 0xa9, 0xb1, 0xdf, 0xc2,
+	0xfc, 0x39, 0xdc, 0xbf, 0x22, 0x3d, 0xd5, 0x54, 0xa9, 0x9c, 0x7e, 0x2c, 0x49, 0x69, 0x7c, 0x08,
+	0xfd, 0xa5, 0xa2, 0x66, 0x2a, 0x58, 0x94, 0x45, 0xa3, 0x41, 0x6e, 0x2b, 0xfe, 0x3b, 0x82, 0xe4,
+	0xba, 0xbe, 0xac, 0x57, 0xcd, 0x78, 0x04, 0xb1, 0x74, 0x0d, 0xb1, 0x14, 0x78, 0x02, 0x3d, 0x2d,
+	0x75, 0x49, 0x2c, 0x36, 0x50, 0x5b, 0x60, 0x06, 0x87, 0x82, 0x54, 0xd1, 0xc8, 0x85, 0x96, 0xf5,
+	0x9c, 0xed, 0x19, 0x6e, 0x13, 0xc2, 0x33, 0x18, 0x14, 0x75, 0xb5, 0x28, 0x49, 0x93, 0x60, 0xfb,
+	0x59, 0x34, 0x4a, 0x72, 0x0f, 0x60, 0x0a, 0x49, 0x43, 0x33, 0xf1, 0x69, 0x5e, 0xfe, 0x62, 0x3d,
+	0x43, 0xae, 0x6b, 0x7c, 0x01, 0xc3, 0x86, 0x54, 0xf1, 0x8d, 0xc4, 0xb2, 0x24, 0x71, 0x2d, 0x2b,
+	0x52, 0xac, 0x9f, 0x45, 0xa3, 0x5e, 0xde, 0xc1, 0xcd, 0x96, 0x86, 0x66, 0x9a, 0xc4, 0x3b, 0xcd,
+	0x0e, 0x4c, 0x93, 0x07, 0xf8, 0x2b, 0x18, 0x7a, 0x0d, 0xd4, 0xa2, 0x9e, 0x2b, 0xc2, 0x67, 0xb0,
+	0x5f, 0x4a, 0xa5, 0x59, 0x94, 0xed, 0x8d, 0x0e, 0x2f, 0x86, 0xad, 0x6a, 0xc5, 0xd8, 0xbd, 0x3f,
+	0x37, 0x2c, 0xff, 0x00, 0x0f, 0x26, 0xf6, 0x58, 0x83, 0xfe, 0x5b, 0xc1, 0x15, 0x2e, 0x35, 0x55,
+	0x53, 0x61, 0x55, 0xb2, 0x15, 0xbf, 0x84, 0x93, 0xed, 0x31, 0xf6, 0x88, 0x5d, 0x91, 0xb7, 0xc4,
+	0x8a, 0x77, 0xc4, 0xe2, 0x05, 0x1c, 0x4f, 0xcc, 0x9b, 0xfe, 0xe7, 0x94, 0x5b, 0xfa, 0xc5, 0x5f,
+	0x03, 0x6e, 0x2e, 0xf1, 0x6a, 0xad, 0x9e, 0x62, 0x76, 0x04, 0xd5, 0x5a, 0xb1, 0xfc, 0x0a, 0x4e,
+	0xf3, 0xb5, 0x33, 0x77, 0xd1, 0xeb, 0x73, 0x77, 0x50, 0x58, 0xb0, 0x50, 0x46, 0xe2, 0x70, 0x46,
+	0xf8, 0x04, 0x8e, 0x73, 0xaa, 0xea, 0x9f, 0x77, 0xba, 0xec, 0x2d, 0xe0, 0xe6, 0x90, 0x1b, 0x7c,
+	0x64, 0x70, 0xd0, 0x98, 0x2e, 0xe7, 0xa2, 0x2b, 0x2f, 0xfe, 0xc4, 0x30, 0x70, 0xaa, 0x29, 0x7c,
+	0x03, 0x89, 0x0b, 0x26, 0x3e, 0x72, 0xa2, 0xee, 0x7c, 0xae, 0x29, 0xeb, 0x12, 0x76, 0xed, 0x14,
+	0xee, 0x6d, 0xc6, 0x0a, 0x9f, 0xb8, 0xce, 0x40, 0x66, 0xd3, 0xb3, 0x30, 0x69, 0x47, 0x4d, 0x00,
+	0xbc, 0xed, 0xf8, 0x78, 0xdd, 0xbb, 0x9b, 0xb7, 0x34, 0x0d, 0x51, 0x76, 0xc8, 0x47, 0x38, 0xda,
+	0xb6, 0x0d, 0x9f, 0xba, 0xee, 0x60, 0x2e, 0xd2, 0x1b, 0xe9, 0xf5, 0x51, 0x5e, 0x6c, 0x7f, 0x54,
+	0xc7, 0x45, 0x7f, 0x54, 0xd7, 0x9b, 0xf7, 0xf0, 0x25, 0x19, 0x9f, 0xb7, 0xf4, 0xd7, 0xf6, 0xa7,
+	0xf8, 0xf2, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5b, 0x5c, 0xd1, 0x23, 0x34, 0x05, 0x00, 0x00,
 }
