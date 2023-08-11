@@ -1,9 +1,17 @@
 package repository
 
 import (
-	"fmt"
+	"context"
 	"niltasks/config"
+	"niltasks/internal/models"
 	"niltasks/pkg/mongo"
+	"niltasks/protoc"
+
+	"go.mongodb.org/mongo-driver/bson"
+)
+
+const (
+	listsColection = "lists"
 )
 
 type Repository struct {
@@ -16,6 +24,15 @@ func New(cfg *config.Config) *Repository {
 	}
 }
 
-func (r *Repository) GetList() {
-	fmt.Println("Hello from GO")
+func (r *Repository) GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*models.List, error) {
+	coll := r.db.Database.Collection(listsColection)
+
+	var res *models.List
+
+	err := coll.FindOne(ctx, bson.D{{Key: "user_id", Value: req.GetUserId()}}).Decode(res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

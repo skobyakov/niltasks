@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
+	"niltasks/internal/models"
 	"niltasks/protoc"
 )
 
 type Repository interface {
-	GetList()
+	GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*models.List, error)
 }
 
 type Service struct {
@@ -18,19 +19,27 @@ func New(r Repository) *Service {
 }
 
 func (s *Service) GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*protoc.GetItemsResponse, error) {
-	list := []*protoc.ToDoItem{
-		{
-			Id:               "test-id",
-			Title:            "Title",
-			Description:      "Description",
-			Completed:        false,
-			ReadOnly:         false,
-			RescheduledTimes: 1,
-			CreatedAt:        1691675220,
-		},
+	list, err := s.repo.GetItems(ctx, req)
+	if err != nil {
+		return nil, err
 	}
+
+	var res []*protoc.ToDoItem
+
+	for _, item := range list.Tasks {
+		res = append(res, &protoc.ToDoItem{
+			Id:               item.Id,
+			Title:            item.Title,
+			Description:      item.Description,
+			Completed:        item.Completed,
+			ReadOnly:         item.ReadOnly,
+			RescheduledTimes: item.RescheduledTimes,
+			CreatedAt:        int32(item.CreatedAt.Unix()),
+		})
+	}
+
 	return &protoc.GetItemsResponse{
-		List: list,
+		List: res,
 	}, nil
 }
 
