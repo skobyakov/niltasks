@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -49,10 +50,11 @@ func (r *Repository) GetItems(ctx context.Context, req *protoc.GetItemsRequest) 
 	return res, nil
 }
 
-func (r *Repository) CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*protoc.CreateItemResponse, error) {
+func (r *Repository) CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*models.Task, error) {
 	coll := r.db.Database.Collection(listsColection)
 
-	task := models.Task{
+	task := &models.Task{
+		ID:               primitive.NewObjectIDFromTimestamp(time.Now()),
 		Title:            req.GetTitle(),
 		Description:      req.GetDescription(),
 		CreatedAt:        time.Now(),
@@ -65,10 +67,67 @@ func (r *Repository) CreateItem(ctx context.Context, req *protoc.CreateItemReque
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
-	err := coll.FindOneAndUpdate(ctx, find, update, opts).Decode(&task)
+	err := coll.FindOneAndUpdate(ctx, find, update, opts).Decode(task)
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return task, nil
+}
+
+func (r *Repository) RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) (*models.Task, error) {
+	coll := r.db.Database.Collection(listsColection)
+
+	var task *models.Task
+
+	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
+	// TODO: Bug. Нужно добавить ArrayFilters
+	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "tasks.rescheduledTimes", Value: 1}}}}
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	err := coll.FindOneAndUpdate(ctx, find, update, opts).Decode(task)
+	if err != nil {
+		return nil, err
+	}
+
+	return task, nil
+}
+
+func (r *Repository) RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest) error {
+	coll := r.db.Database.Collection(listsColection)
+
+	taskId, err := primitive.ObjectIDFromHex(req.GetItemId())
+	if err != nil {
+		return err
+	}
+
+	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
+	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "tasks", Value: bson.D{{Key: "_id", Value: taskId}}}}}}
+
+	err = coll.FindOneAndUpdate(ctx, find, update).Err()
+
+	return err
+}
+
+func (r *Repository) CompleteItem(ctx context.Context, req *protoc.CompleteItemRequest) (*models.Task, error) {
+	coll := r.db.Database.Collection(listsColection)
+
+	var task *models.Task
+
+	taskId, err := primitive.ObjectIDFromHex(req.GetItemId())
+	if err != nil {
+		return nil, err
+	}
+
+	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "tasks.$[elem].completed", Value: true}}}}
+	opt := options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{bson.D{{Key: "elem._id", Value: taskId}}},
+	})
+	err = coll.FindOneAndUpdate(ctx, find, update, opt).Decode(task)
+	if err != nil {
+		return nil, err
+	}
+
+	return task, nil
 }

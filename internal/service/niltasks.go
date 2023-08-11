@@ -8,7 +8,10 @@ import (
 
 type Repository interface {
 	GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*models.List, error)
-	CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*protoc.CreateItemResponse, error)
+	CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*models.Task, error)
+	RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) (*models.Task, error)
+	RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest) error
+	CompleteItem(ctx context.Context, req *protoc.CompleteItemRequest) (*models.Task, error)
 }
 
 type Service struct {
@@ -29,7 +32,7 @@ func (s *Service) GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*p
 
 	for _, item := range list.Tasks {
 		res = append(res, &protoc.ToDoItem{
-			Id:               item.Id,
+			Id:               item.ID.Hex(),
 			Title:            item.Title,
 			Description:      item.Description,
 			Completed:        item.Completed,
@@ -52,33 +55,43 @@ func (s *Service) CompleteItem(ctx context.Context, req *protoc.CompleteItemRequ
 }
 
 func (s *Service) CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*protoc.CreateItemResponse, error) {
-	_, err := s.repo.CreateItem(ctx, req)
+	res, err := s.repo.CreateItem(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	return &protoc.CreateItemResponse{
 		Item: &protoc.ToDoItem{
-			Id:               "test-id",
-			Title:            "Title",
-			Description:      "Description",
+			Id:               res.ID.Hex(),
+			Title:            res.Title,
+			Description:      res.Description,
 			Completed:        false,
 			ReadOnly:         false,
 			RescheduledTimes: 0,
-			CreatedAt:        1691675220,
+			CreatedAt:        int32(res.CreatedAt.Unix()),
 		},
 	}, nil
 }
 
 func (s *Service) RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) (*protoc.RescheduleItemReponse, error) {
+	task, err := s.repo.RescheduleItem(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
 	return &protoc.RescheduleItemReponse{
-		Id:               "test-id",
-		RescheduledTimes: 1,
+		Id:               task.ID.Hex(),
+		RescheduledTimes: task.RescheduledTimes,
 	}, nil
 }
 
 func (s *Service) RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest) (*protoc.RemoveItemResponse, error) {
+	err := s.repo.RemoveItem(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
 	return &protoc.RemoveItemResponse{
-		Id:      "test-id",
+		Id:      req.GetItemId(),
 		Removed: true,
 	}, nil
 }
