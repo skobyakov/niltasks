@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*models.List, error)
+	CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*protoc.CreateItemResponse, error)
 }
 
 type Service struct {
@@ -51,6 +52,10 @@ func (s *Service) CompleteItem(ctx context.Context, req *protoc.CompleteItemRequ
 }
 
 func (s *Service) CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*protoc.CreateItemResponse, error) {
+	_, err := s.repo.CreateItem(ctx, req)
+	if err != nil {
+		return nil, err
+	}
 	return &protoc.CreateItemResponse{
 		Item: &protoc.ToDoItem{
 			Id:               "test-id",

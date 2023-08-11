@@ -6,8 +6,10 @@ import (
 	"niltasks/internal/models"
 	"niltasks/pkg/mongo"
 	"niltasks/protoc"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -18,9 +20,9 @@ type Repository struct {
 	db *mongo.MongoDB
 }
 
-func New(cfg *config.Config) *Repository {
+func New(cfg *config.Config, db *mongo.MongoDB) *Repository {
 	return &Repository{
-		db: mongo.New(&cfg.Mongo),
+		db: db,
 	}
 }
 
@@ -29,10 +31,44 @@ func (r *Repository) GetItems(ctx context.Context, req *protoc.GetItemsRequest) 
 
 	var res *models.List
 
-	err := coll.FindOne(ctx, bson.D{{Key: "user_id", Value: req.GetUserId()}}).Decode(res)
+	newList := models.List{
+		UserId: req.UserId,
+		Tasks:  []models.Task{},
+	}
+
+	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
+	update := bson.D{{Key: "$setOnInsert", Value: newList}}
+
+	opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
+
+	err := coll.FindOneAndUpdate(ctx, find, update, opts).Decode(&res)
 	if err != nil {
 		return nil, err
 	}
 
 	return res, nil
+}
+
+func (r *Repository) CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*protoc.CreateItemResponse, error) {
+	coll := r.db.Database.Collection(listsColection)
+
+	task := models.Task{
+		Title:            req.GetTitle(),
+		Description:      req.GetDescription(),
+		CreatedAt:        time.Now(),
+		Completed:        false,
+		ReadOnly:         false,
+		RescheduledTimes: 0,
+	}
+	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
+	update := bson.D{{Key: "$push", Value: bson.D{{Key: "tasks", Value: task}}}}
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+
+	err := coll.FindOneAndUpdate(ctx, find, update, opts).Decode(&task)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
 }

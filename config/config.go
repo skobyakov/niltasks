@@ -6,8 +6,14 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
+type ServerConfig struct {
+	Host string `yaml:"host"`
+	Port string `yaml:"port"`
+}
+
 type Config struct {
-	Mongo config.MongoConfig `yaml:"mongo"`
+	Server ServerConfig       `yaml:"server"`
+	Mongo  config.MongoConfig `yaml:"mongo"`
 }
 
 func MustLoad() *Config {
