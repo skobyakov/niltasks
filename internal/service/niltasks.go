@@ -9,9 +9,9 @@ import (
 type Repository interface {
 	GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*models.List, error)
 	CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*models.Task, error)
-	RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) (*models.Task, error)
+	RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) error
 	RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest) error
-	CompleteItem(ctx context.Context, req *protoc.CompleteItemRequest) (*models.Task, error)
+	CompleteItem(ctx context.Context, req *protoc.CompleteItemRequest) error
 }
 
 type Service struct {
@@ -48,15 +48,12 @@ func (s *Service) GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*p
 }
 
 func (s *Service) CompleteItem(ctx context.Context, req *protoc.CompleteItemRequest) (*protoc.CompleteItemResponse, error) {
-	res, err := s.repo.CompleteItem(ctx, req)
+	err := s.repo.CompleteItem(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &protoc.CompleteItemResponse{
-		Id:        res.ID.Hex(),
-		Completed: true,
-	}, nil
+	return &protoc.CompleteItemResponse{}, nil
 }
 
 func (s *Service) CreateItem(ctx context.Context, req *protoc.CreateItemRequest) (*protoc.CreateItemResponse, error) {
@@ -78,15 +75,13 @@ func (s *Service) CreateItem(ctx context.Context, req *protoc.CreateItemRequest)
 }
 
 func (s *Service) RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) (*protoc.RescheduleItemReponse, error) {
-	task, err := s.repo.RescheduleItem(ctx, req)
+	err := s.repo.RescheduleItem(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &protoc.RescheduleItemReponse{
-		Id:               task.ID.Hex(),
-		RescheduledTimes: task.RescheduledTimes,
-	}, nil
+	return &protoc.RescheduleItemReponse{}, nil
+
 }
 
 func (s *Service) RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest) (*protoc.RemoveItemResponse, error) {
@@ -95,8 +90,5 @@ func (s *Service) RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest)
 		return nil, err
 	}
 
-	return &protoc.RemoveItemResponse{
-		Id:      req.GetItemId(),
-		Removed: true,
-	}, nil
+	return &protoc.RemoveItemResponse{}, nil
 }

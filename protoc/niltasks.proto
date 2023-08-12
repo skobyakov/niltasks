@@ -34,10 +34,7 @@ message CompleteItemRequest {
 	string itemId = 2;
 }
 
-message CompleteItemResponse {
-	string id = 1;
-	bool completed = 2;
-}
+message CompleteItemResponse {}
 
 message CreateItemRequest {
 	string userId = 1;
@@ -54,17 +51,11 @@ message RescheduleItemRequest {
 	string itemId = 2;
 }
 
-message RescheduleItemReponse {
-	string id = 1;
-	int32 rescheduledTimes = 2;
-}
+message RescheduleItemReponse {}
 
 message RemoveItemRequest {
 	string userId = 1;
 	string itemId = 2;
 }
 
-message RemoveItemResponse {
-	string id = 1;
-	bool removed = 2;
-}
+message RemoveItemResponse {}
