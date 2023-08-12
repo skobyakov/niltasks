@@ -48,8 +48,13 @@ func (s *Service) GetItems(ctx context.Context, req *protoc.GetItemsRequest) (*p
 }
 
 func (s *Service) CompleteItem(ctx context.Context, req *protoc.CompleteItemRequest) (*protoc.CompleteItemResponse, error) {
+	res, err := s.repo.CompleteItem(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
 	return &protoc.CompleteItemResponse{
-		Id:        "test-id",
+		Id:        res.ID.Hex(),
 		Completed: true,
 	}, nil
 }

@@ -78,19 +78,25 @@ func (r *Repository) CreateItem(ctx context.Context, req *protoc.CreateItemReque
 func (r *Repository) RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) (*models.Task, error) {
 	coll := r.db.Database.Collection(listsColection)
 
-	var task *models.Task
+	var task models.Task
 
-	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
-	// TODO: Bug. Нужно добавить ArrayFilters
-	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "tasks.rescheduledTimes", Value: 1}}}}
-
-	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	err := coll.FindOneAndUpdate(ctx, find, update, opts).Decode(task)
+	taskId, err := primitive.ObjectIDFromHex(req.GetItemId())
 	if err != nil {
 		return nil, err
 	}
 
-	return task, nil
+	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
+	update := bson.D{{Key: "$inc", Value: bson.D{{Key: "tasks.$[elem].rescheduledTimes", Value: 1}}}}
+	opt := options.FindOneAndUpdate().SetReturnDocument(options.After).SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{bson.D{{Key: "elem._id", Value: taskId}}},
+	})
+
+	err = coll.FindOneAndUpdate(ctx, find, update, opt).Decode(&task)
+	if err != nil {
+		return nil, err
+	}
+
+	return &task, nil
 }
 
 func (r *Repository) RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest) error {
@@ -112,22 +118,22 @@ func (r *Repository) RemoveItem(ctx context.Context, req *protoc.RemoveItemReque
 func (r *Repository) CompleteItem(ctx context.Context, req *protoc.CompleteItemRequest) (*models.Task, error) {
 	coll := r.db.Database.Collection(listsColection)
 
-	var task *models.Task
+	var task models.Task
 
 	taskId, err := primitive.ObjectIDFromHex(req.GetItemId())
 	if err != nil {
 		return nil, err
 	}
-
+	// TODO: Bug - need to return task not list (or change contract)
 	find := bson.D{{Key: "user_id", Value: req.GetUserId()}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "tasks.$[elem].completed", Value: true}}}}
-	opt := options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+	opt := options.FindOneAndUpdate().SetReturnDocument(options.After).SetArrayFilters(options.ArrayFilters{
 		Filters: []interface{}{bson.D{{Key: "elem._id", Value: taskId}}},
 	})
-	err = coll.FindOneAndUpdate(ctx, find, update, opt).Decode(task)
+	err = coll.FindOneAndUpdate(ctx, find, update, opt).Decode(&task)
 	if err != nil {
 		return nil, err
 	}
 
-	return task, nil
+	return &task, nil
 }

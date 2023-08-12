@@ -49,10 +49,13 @@ func (c *Controller) CreateItem(ctx context.Context, req *protoc.CreateItemReque
 }
 
 func (c *Controller) RescheduleItem(ctx context.Context, req *protoc.RescheduleItemRequest) (*protoc.RescheduleItemReponse, error) {
-	return &protoc.RescheduleItemReponse{
-		Id:               "test-id",
-		RescheduledTimes: 1,
-	}, nil
+	res, err := c.service.RescheduleItem(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+
 }
 
 func (c *Controller) RemoveItem(ctx context.Context, req *protoc.RemoveItemRequest) (*protoc.RemoveItemResponse, error) {
